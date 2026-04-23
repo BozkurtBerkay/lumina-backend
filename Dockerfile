@@ -27,6 +27,7 @@ RUN npm ci --omit=dev
 
 # Build çıktılarını kopyala
 COPY --from=build /app/dist ./dist
+COPY --from=build /app/src ./src
 COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/prisma.config.ts ./
 
