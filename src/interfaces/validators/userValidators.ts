@@ -7,7 +7,7 @@ export const createUserSchema = z.object({
     firstName: z.string().min(1, "First name is required"),
     lastName: z.string().min(1, "Last name is required"),
     role: z.enum(["ADMIN", "TEACHER", "STUDENT", "PARENT"]).optional(),
-    schoolId: z.string().uuid("Invalid School ID format").optional(),
+    schoolId: z.string().uuid("Invalid School ID format").optional().or(z.literal('')).transform(v => v === '' ? undefined : v),
   }),
 });
 
@@ -18,7 +18,7 @@ export const updateUserSchema = z.object({
     firstName: z.string().optional(),
     lastName: z.string().optional(),
     role: z.enum(["ADMIN", "TEACHER", "STUDENT", "PARENT"]).optional(),
-    schoolId: z.string().uuid().optional(),
+    schoolId: z.string().uuid().optional().or(z.literal('')).transform(v => v === '' ? undefined : v),
   }),
   params: z.object({
     id: z.string().uuid("Invalid User ID format"),
