@@ -1,0 +1,140 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Grade {
+  id          String   @id @default(uuid())
+  name        String // Örn: "8. Sınıf"
+  description String?
+  orderIndex  Int      @default(0) // Sınıfların sıralaması için
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // İlişkiler
+  courses Course[]
+}
+
+model Course {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // İlişkiler
+  gradeId String
+  grade   Grade  @relation(fields: [gradeId], references: [id], onDelete: Cascade)
+  units   Unit[]
+}
+
+model Unit {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  orderIndex  Int      @default(0) // Ünitelerin sıralaması için
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // İlişkiler
+  courseId  String
+  course    Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  questions Question[]
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+  OPEN_ENDED
+}
+
+model Question {
+  id            String       @id @default(uuid())
+  content       String // Sorunun metni
+  type          QuestionType @default(MULTIPLE_CHOICE)
+  options       Json? // Çoktan seçmeli için seçenekler (örn: {"A": "...", "B": "..."})
+  correctAnswer String? // Doğru cevabın anahtarı (örn: "A", "B", "C", "D" veya "true", "false")
+  imageUrl      String? // Resimli sorular için görsel URL'si
+  imageAlt      String? // Görme yetersizliği olanlar için görsel betimlemesi
+  orderIndex    Int          @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  // İlişkiler
+  unitId  String
+  unit    Unit                 @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  results UserQuestionResult[]
+}
+
+model School {
+  id          String   @id @default(uuid())
+  name        String // Okulun tam adı
+  city        String? // Bulunduğu şehir
+  district    String? // Bulunduğu ilçe
+  address     String? // Tam adres
+  phoneNumber String? // İletişim numarası
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // İlişkiler
+  users User[]
+}
+
+enum UserRole {
+  ADMIN
+  TEACHER
+  STUDENT
+  PARENT
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  role         UserRole @default(STUDENT)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // İlişkiler
+  schoolId     String?
+  school       School?              @relation(fields: [schoolId], references: [id])
+  accessTokens AccessToken[]
+  results      UserQuestionResult[]
+}
+
+model AccessToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model UserQuestionResult {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionId   String
+  question     Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  userResponse String
+  timeSpent    Int // milisaniye cinsinden
+  isCorrect    Boolean
+  attemptId    String?  // Aynı sınavdaki cevapları gruplamak için eklendi
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+  @@index([questionId])
+  @@index([attemptId])
+}
