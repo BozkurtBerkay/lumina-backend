@@ -15,6 +15,7 @@ COPY prisma.config.ts ./
 COPY src ./src
 RUN npx prisma generate
 RUN npm run build
+RUN cp -R src/generated dist/generated
 
 # ---- Production ----
 FROM base AS production
@@ -26,7 +27,6 @@ RUN npm ci --omit=dev
 
 # Build çıktılarını kopyala
 COPY --from=build /app/dist ./dist
-COPY --from=build /app/src/generated ./src/generated
 COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/prisma.config.ts ./
 
