@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node dist/index.js",
-    "start:prod": "node -e 'console.log(\"URL var mı?:\", !!process.env.DATABASE_URL)' && npx prisma migrate deploy && node dist/index.js",
+    "start:prod": "npx prisma db push --accept-data-loss && node dist/index.js",
     "dev": "nodemon src/index.ts",
     "build": "tsc",
     "test": "vitest run"
