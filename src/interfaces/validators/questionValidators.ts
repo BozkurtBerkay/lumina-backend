@@ -85,3 +85,16 @@ export const getQuestionsQuerySchema = z.object({
     unitId: z.string().uuid('Invalid Unit ID format').optional(),
   }),
 });
+
+export const reorderQuestionsSchema = z.object({
+  body: z.object({
+    questions: z
+      .array(
+        z.object({
+          id: z.string().uuid('Invalid Question ID format'),
+          orderIndex: z.number().int().min(0, 'Order index must be a non-negative integer'),
+        })
+      )
+      .min(1, 'At least one question must be provided'),
+  }),
+});

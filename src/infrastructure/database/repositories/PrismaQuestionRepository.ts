@@ -61,4 +61,15 @@ export class PrismaQuestionRepository implements IQuestionRepository {
       where: { id },
     });
   }
+
+  async reorder(items: { id: string; orderIndex: number }[]): Promise<void> {
+    await this.prisma.$transaction(
+      items.map(({ id, orderIndex }) =>
+        this.prisma.question.update({
+          where: { id },
+          data: { orderIndex },
+        })
+      )
+    );
+  }
 }

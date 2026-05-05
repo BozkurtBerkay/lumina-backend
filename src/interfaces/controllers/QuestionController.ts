@@ -72,4 +72,14 @@ export class QuestionController {
       }
     }
   };
+
+  reorderQuestions = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { questions } = req.body as { questions: { id: string; orderIndex: number }[] };
+      await this.questionService.reorderQuestions(questions);
+      res.status(200).json({ message: 'Questions reordered successfully' });
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  };
 }

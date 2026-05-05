@@ -37,4 +37,8 @@ export class QuestionService {
     }
     await this.questionRepository.delete(id);
   }
+
+  async reorderQuestions(items: { id: string; orderIndex: number }[]): Promise<void> {
+    await this.questionRepository.reorder(items);
+  }
 }

@@ -4,7 +4,7 @@ import { QuestionService } from '../../application/services/QuestionService';
 import { PrismaQuestionRepository } from '../../infrastructure/database/repositories/PrismaQuestionRepository';
 import { prisma } from '../../infrastructure/database/prismaClient';
 import { validateRequest } from '../middlewares/validateRequest';
-import { createQuestionSchema, updateQuestionSchema, questionIdParamsSchema, getQuestionsQuerySchema } from '../validators/questionValidators';
+import { createQuestionSchema, updateQuestionSchema, questionIdParamsSchema, getQuestionsQuerySchema, reorderQuestionsSchema } from '../validators/questionValidators';
 
 const questionRoutes = Router();
 
@@ -15,6 +15,7 @@ const questionController = new QuestionController(questionService);
 
 // Route tanımları
 questionRoutes.get('/', validateRequest(getQuestionsQuerySchema), questionController.getAllQuestions);
+questionRoutes.patch('/reorder', validateRequest(reorderQuestionsSchema), questionController.reorderQuestions);
 questionRoutes.get('/:id', validateRequest(questionIdParamsSchema), questionController.getQuestionById);
 questionRoutes.post('/', validateRequest(createQuestionSchema), questionController.createQuestion);
 questionRoutes.put('/:id', validateRequest(updateQuestionSchema), questionController.updateQuestion);
