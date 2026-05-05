@@ -1,11 +1,22 @@
 export type QuestionType = 'MULTIPLE_CHOICE' | 'TRUE_FALSE' | 'OPEN_ENDED';
 
+/** Tek bir şıkkın zengin içerik formatı */
+export interface QuestionOption {
+  text: string;
+  imageUrl?: string | null;
+  imageAlt?: string | null;
+}
+
+/**
+ * options alanı: eski format (düz string) veya yeni format (zengin nesne).
+ * Geriye dönük uyumluluk için ikisi de desteklenmektedir.
+ */
 export interface QuestionOptions {
-  A?: string;
-  B?: string;
-  C?: string;
-  D?: string;
-  [key: string]: string | undefined; // Diğer seçenekler (E, F vb.) için esneklik sağlar
+  A?: string | QuestionOption;
+  B?: string | QuestionOption;
+  C?: string | QuestionOption;
+  D?: string | QuestionOption;
+  [key: string]: string | QuestionOption | undefined;
 }
 
 export interface Question {

@@ -9,12 +9,22 @@ const imageUrlSchema = z.string()
 
 const imageAltSchema = z.string().optional().nullable();
 
+// Tek bir şıkkın şeması: düz metin VEYA zengin nesne (geriye dönük uyumlu)
+const questionOptionSchema = z.union([
+  z.string(),
+  z.object({
+    text: z.string().min(1, 'Şık metni boş olamaz'),
+    imageUrl: imageUrlSchema,
+    imageAlt: imageAltSchema,
+  }),
+]);
+
 const baseQuestionBodySchema = z.object({
   content: z.string({
     message: 'Question content is required',
   }).min(3, 'Content must be at least 3 characters long'),
   type: QuestionTypeEnum.optional(),
-  options: z.record(z.string(), z.string()).optional().nullable(),
+  options: z.record(z.string(), questionOptionSchema).optional().nullable(),
   correctAnswer: z.string().optional().nullable(),
   imageUrl: imageUrlSchema,
   imageAlt: imageAltSchema,
